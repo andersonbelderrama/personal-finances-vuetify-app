@@ -1,5 +1,5 @@
 <template>
-  <HelloWorld />
+  Principal
 </template>
 
 <script setup>

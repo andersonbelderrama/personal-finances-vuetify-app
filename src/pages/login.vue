@@ -1,7 +1,9 @@
 <template>
-  <v-row>
-    <v-col class="d-none d-lg-flex">
-      <v-img src="@/assets/bg-login.jpg" cover height="100vh" />
+  <v-row  class="h-100 ma-0">
+    <v-col class="d-none d-lg-flex pa-0 bg-login">
+      <div class="bg-gradient-login">
+
+      </div>
     </v-col>
     <v-col lg="4" class="pa-10 px-lg-6">
       <v-container>
@@ -50,10 +52,12 @@
     </v-col>
   </v-row>
 </template>
+
 <route lang="yaml">
   meta:
     layout: guest
 </route>
+
 <script setup>
 import { useTheme } from 'vuetify'
 
@@ -65,3 +69,16 @@ function toggleTheme () {
   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
 }
 </script>
+
+<style>
+.bg-login{
+  background-image: url(@/assets/bg-login.jpg);
+  background-size: cover;
+}
+
+.bg-gradient-login {
+  background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.2));
+  width: 100%;
+  height: 100%;
+}
+</style>

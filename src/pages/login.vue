@@ -21,15 +21,15 @@
             <p class="text-body-1 text-grey-darken-1">Acesse sua conta para continuar.</p>
           </v-col>
         </v-row>
-        <v-form>
+        <v-form @submit.prevent="authStore.handleLogin(credentials)">
           <v-row>
             <v-col>
-              <v-text-field label="E-mail" type="email" />
+              <v-text-field v-model="credentials.email" label="E-mail" type="email" />
             </v-col>
           </v-row>
           <v-row>
             <v-col>
-              <v-text-field label="Senha" type="password" />
+              <v-text-field v-model="credentials.password" label="Senha" type="password" />
             </v-col>
           </v-row>
           <v-row class="ml-n5">
@@ -59,15 +59,28 @@
 </route>
 
 <script setup>
+import { ref,reactive } from 'vue'
 import { useTheme } from 'vuetify'
+import { useAuthStore } from '@/stores/auth';
+
 
 import Logo from '@/components/Logo.vue';
 
-const theme = useTheme()
 
+const theme = useTheme()
+const authStore = useAuthStore()
+
+const credentials = reactive({
+  email: '',
+  password: ''
+})
+
+// Função para alterar o tema
 function toggleTheme () {
   theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
 }
+
+
 </script>
 
 <style>

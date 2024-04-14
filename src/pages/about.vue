@@ -1,5 +1,5 @@
 <template>
-  <h1 class="text-lg">Principal Page</h1>
+  <h1 class="text-lg">About Page</h1>
 </template>
 
 <route lang="yaml">

@@ -21,15 +21,16 @@
             <p class="text-body-1 text-grey-darken-1">Acesse sua conta para continuar.</p>
           </v-col>
         </v-row>
-        <v-form @submit.prevent="authStore.handleLogin(credentials)">
+        <v-form v-model="valid" @submit.prevent="handleLogin()" >
+          <v-alert v-if="authStore.error" type="error" color="error" icon="$error" title="Ocorreu um erro!"  closable class="mb-10">{{ authStore.error }}</v-alert>
           <v-row>
             <v-col>
-              <v-text-field v-model="credentials.email" label="E-mail" type="email" />
+              <v-text-field v-model="credentials.email" label="E-mail" type="email" :rules="rules.email" required  clearable />
             </v-col>
           </v-row>
           <v-row>
             <v-col>
-              <v-text-field v-model="credentials.password" label="Senha" type="password" />
+              <v-text-field v-model="credentials.password" label="Senha" type="password" :rules="rules.password" required clearable />
             </v-col>
           </v-row>
           <v-row class="ml-n5">
@@ -39,7 +40,7 @@
           </v-row>
           <v-row>
             <v-col>
-              <v-btn type="submit" color="deep-purple-darken-2" prepend-icon="fas fa-right-to-bracket" size="large" block>Entrar</v-btn>
+              <v-btn  :loading="loading" type="submit" color="deep-purple-darken-2" prepend-icon="fas fa-right-to-bracket" size="large" block>Entrar</v-btn>
             </v-col>
           </v-row>
         </v-form>
@@ -63,17 +64,36 @@ import { ref,reactive } from 'vue'
 import { useTheme } from 'vuetify'
 import { useAuthStore } from '@/stores/auth';
 
-
 import Logo from '@/components/Logo.vue';
-
 
 const theme = useTheme()
 const authStore = useAuthStore()
 
+const loading = ref(false)
+const valid = ref(false)
 const credentials = reactive({
   email: '',
   password: ''
 })
+const rules = {
+  email: [
+    v => !!v || 'E-mail obrigatório',
+    v => /.+@.+\..+/.test(v) || 'E-mail inválido',
+  ],
+  password: [
+    v => !!v || 'Senha obrigatória',
+    v => (v && v.length >= 6) || 'Senha deve ter pelo menos 6 caracteres',
+  ],
+}
+
+async function handleLogin () {
+  if(valid.value) {
+    loading.value = true
+    authStore.error = null
+    await authStore.handleLogin(credentials)
+    loading.value = false
+  }
+}
 
 // Função para alterar o tema
 function toggleTheme () {

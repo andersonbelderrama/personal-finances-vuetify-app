@@ -7,7 +7,8 @@ import router from '@/router'
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     isAuthenticated: false,//localStorage.getItem('isAuthenticated') === 'true' ? true : false,
-    user: null
+    user: null,
+    error: null
   }),
 
   actions: {
@@ -27,7 +28,12 @@ export const useAuthStore = defineStore('auth', {
             router.push('/');
           }
         } catch (error) {
-          console.error(error)
+          if(error.response.status === 422) {
+            this.error = error.response.data.message
+          } else {
+            console.error(error)
+          }
+          console.error(this.error)
         }
       }
     },
@@ -67,8 +73,5 @@ export const useAuthStore = defineStore('auth', {
       }
     }
   },
-
-
-
 
 })

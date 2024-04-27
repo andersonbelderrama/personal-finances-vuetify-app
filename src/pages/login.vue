@@ -1,57 +1,63 @@
 <template>
-  <v-row  class="h-100 ma-0">
-    <v-col class="d-none d-lg-flex pa-0 bg-login">
-      <div class="bg-gradient-login">
+    <v-row class="h-100 ma-0">
+        <v-col class="d-none d-lg-flex pa-0 bg-login">
+            <div class="bg-gradient-login">
 
-      </div>
-    </v-col>
-    <v-col lg="4" class="pa-10 px-lg-6">
-      <v-container>
-        <v-row class="mb-16 pb-4">
-          <v-col >
-            <Logo />
-          </v-col>
-          <v-col class="d-flex justify-end">
-            <v-btn @click="toggleTheme" :icon="theme.global.current.value.dark ? 'mdi:mdi-lightbulb-on-outline' : 'mdi:mdi-lightbulb-outline'"></v-btn>
-          </v-col>
-        </v-row>
-        <v-row class="my-8">
-          <v-col>
-            <h4 class="text-h5 font-weight-bold">Boas vindas!</h4>
-            <p class="text-body-1 text-grey-darken-1">Acesse sua conta para continuar.</p>
-          </v-col>
-        </v-row>
-        <v-form v-model="valid" @submit.prevent="handleLogin()" >
-          <v-alert v-if="authStore.error" type="error" color="error" icon="$error" title="Ocorreu um erro!"  closable class="mb-10">{{ authStore.error }}</v-alert>
-          <v-row>
-            <v-col>
-              <v-text-field v-model="credentials.email" label="E-mail" type="email" :rules="rules.email" required  clearable />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-text-field v-model="credentials.password" label="Senha" type="password" :rules="rules.password" required clearable />
-            </v-col>
-          </v-row>
-          <v-row class="ml-n5">
-            <v-col>
-              <v-checkbox color="deep-purple-darken-2" label="Manter conectado" />
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-btn  :loading="loading" type="submit" color="deep-purple-darken-2" prepend-icon="fas fa-right-to-bracket" size="large" block>Entrar</v-btn>
-            </v-col>
-          </v-row>
-        </v-form>
-        <v-row class="mt-10 pa-4 d-flex justify-center">
-          <v-col class="d-flex justify-center">
-            <p class="text-grey-darken-1">Esqueceu sua senha? <a href="#" class="text-decoration-none text-deep-purple-lighten-2">Recuperar senha</a></p>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-col>
-  </v-row>
+            </div>
+        </v-col>
+        <v-col lg="4" class="pa-10 px-lg-6">
+            <v-container>
+                <v-row class="mb-16 pb-4">
+                    <v-col>
+                        <Logo />
+                    </v-col>
+                    <v-col class="d-flex justify-end">
+                        <v-btn @click="toggleTheme()"
+                        :icon="theme.global.current.dark  ? 'mdi:mdi-lightbulb-on-outline' : 'mdi:mdi-lightbulb-outline'"></v-btn>
+                    </v-col>
+                </v-row>
+                <v-row class="my-8">
+                    <v-col>
+                        <h4 class="text-h5 font-weight-bold">Boas vindas!</h4>
+                        <p class="text-body-1 text-grey-darken-1">Acesse sua conta para continuar.</p>
+                    </v-col>
+                </v-row>
+                <v-form v-model="valid" @submit.prevent="handleLogin()">
+                    <v-alert v-if="authStore.error" type="error" color="error" icon="$error" title="Ocorreu um erro!"
+                        closable class="mb-10">{{ authStore.error }}</v-alert>
+                    <v-row>
+                        <v-col>
+                            <v-text-field v-model="credentials.email" label="E-mail" type="email" :rules="rules.email"
+                                required clearable />
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col>
+                            <v-text-field v-model="credentials.password" label="Senha" type="password"
+                                :rules="rules.password" required clearable />
+                        </v-col>
+                    </v-row>
+                    <v-row class="ml-n5">
+                        <v-col>
+                            <v-checkbox color="deep-purple-darken-2" label="Manter conectado" />
+                        </v-col>
+                    </v-row>
+                    <v-row>
+                        <v-col>
+                            <v-btn :loading="loading" type="submit" color="deep-purple-darken-2"
+                                prepend-icon="fas fa-right-to-bracket" size="large" block>Entrar</v-btn>
+                        </v-col>
+                    </v-row>
+                </v-form>
+                <v-row class="mt-10 pa-4 d-flex justify-center">
+                    <v-col class="d-flex justify-center">
+                        <p class="text-grey-darken-1">Esqueceu sua senha? <a href="#"
+                                class="text-decoration-none text-deep-purple-lighten-2">Recuperar senha</a></p>
+                    </v-col>
+                </v-row>
+            </v-container>
+        </v-col>
+    </v-row>
 </template>
 
 <route lang="yaml">
@@ -59,59 +65,69 @@
     layout: guest
 </route>
 
-<script setup>
-import { ref,reactive } from 'vue'
+<script>
 import { useTheme } from 'vuetify'
 import { useAuthStore } from '@/stores/auth';
-
 import Logo from '@/components/Logo.vue';
 
-const theme = useTheme()
-const authStore = useAuthStore()
-
-const loading = ref(false)
-const valid = ref(false)
-const credentials = reactive({
-  email: '',
-  password: ''
-})
-const rules = {
-  email: [
-    v => !!v || 'E-mail obrigatório',
-    v => /.+@.+\..+/.test(v) || 'E-mail inválido',
-  ],
-  password: [
-    v => !!v || 'Senha obrigatória',
-    v => (v && v.length >= 6) || 'Senha deve ter pelo menos 6 caracteres',
-  ],
+export default {
+    name: 'LoginPage',
+    components: {
+        Logo
+    },
+    data(){
+        return {
+            theme: useTheme(),
+            authStore: useAuthStore(),
+            credentials: {
+                email: '',
+                password: ''
+            },
+            rules: {
+                email: [
+                    v => !!v || 'E-mail obrigatório',
+                    v => /.+@.+\..+/.test(v) || 'E-mail inválido',
+                ],
+                password: [
+                    v => !!v || 'Senha obrigatória',
+                    v => (v && v.length >= 6) || 'Senha deve ter pelo menos 6 caracteres',
+                ]
+            },
+            loading: false,
+            valid: false,
+        }
+    },
+    methods: {
+        async handleLogin() {
+            if (this.valid) {
+                this.loading = true
+                this.clear()
+                await this.authStore.handleLogin(this.credentials)
+                this.loading = false
+            }
+        },
+        toggleTheme() {
+            this.theme.global.name = this.theme.global.current.dark ? 'light' : 'dark'
+        },
+        clear() {
+            this.authStore.error = null
+            this.credentials.email = ''
+            this.credentials.password = ''
+            this.valid = false
+        }
+    }
 }
-
-async function handleLogin () {
-  if(valid.value) {
-    loading.value = true
-    authStore.error = null
-    await authStore.handleLogin(credentials)
-    loading.value = false
-  }
-}
-
-// Função para alterar o tema
-function toggleTheme () {
-  theme.global.name.value = theme.global.current.value.dark ? 'light' : 'dark'
-}
-
-
 </script>
 
 <style>
-.bg-login{
-  background-image: url(@/assets/bg-login.jpg);
-  background-size: cover;
+.bg-login {
+    background-image: url(@/assets/bg-login.jpg);
+    background-size: cover;
 }
 
 .bg-gradient-login {
-  background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.2));
-  width: 100%;
-  height: 100%;
+    background: linear-gradient(to top, rgba(0, 0, 0, 1), rgba(0, 0, 0, 0.2));
+    width: 100%;
+    height: 100%;
 }
 </style>

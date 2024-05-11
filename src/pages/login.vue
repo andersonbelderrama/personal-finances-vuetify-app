@@ -13,7 +13,7 @@
                     </v-col>
                     <v-col class="d-flex justify-end">
                         <v-btn @click="toggleTheme()"
-                        :icon="theme.global.current.dark  ? 'mdi:mdi-lightbulb-on-outline' : 'mdi:mdi-lightbulb-outline'"></v-btn>
+                            :icon="theme.global.current.dark ? 'mdi:mdi-lightbulb-on-outline' : 'mdi:mdi-lightbulb-outline'"></v-btn>
                     </v-col>
                 </v-row>
                 <v-row class="my-8">
@@ -22,7 +22,7 @@
                         <p class="text-body-1 text-grey-darken-1">Acesse sua conta para continuar.</p>
                     </v-col>
                 </v-row>
-                <v-form v-model="valid" @submit.prevent="handleLogin()">
+                <v-form v-model="valid" validate-on="lazy submit" @submit.prevent="handleLogin()">
                     <v-alert v-if="authStore.error" type="error" color="error" icon="$error" title="Ocorreu um erro!"
                         closable class="mb-10">{{ authStore.error }}</v-alert>
                     <v-row>
@@ -39,7 +39,8 @@
                     </v-row>
                     <v-row class="ml-n5">
                         <v-col>
-                            <v-checkbox color="deep-purple-darken-2" label="Manter conectado" />
+                            <v-checkbox v-model="credentials.remember" color="deep-purple-darken-2"
+                                label="Manter conectado" />
                         </v-col>
                     </v-row>
                     <v-row>
@@ -71,49 +72,51 @@ import { useAuthStore } from '@/stores/auth';
 import Logo from '@/components/Logo.vue';
 
 export default {
-    name: 'LoginPage',
-    components: {
-        Logo
-    },
-    data(){
-        return {
-            theme: useTheme(),
-            authStore: useAuthStore(),
-            credentials: {
-                email: '',
-                password: ''
-            },
-            rules: {
-                email: [
-                    v => !!v || 'E-mail obrigatório',
-                    v => /.+@.+\..+/.test(v) || 'E-mail inválido',
-                ],
-                password: [
-                    v => !!v || 'Senha obrigatória',
-                    v => (v && v.length >= 6) || 'Senha deve ter pelo menos 6 caracteres',
-                ]
-            },
-            loading: false,
-            valid: false,
+  name: 'LoginPage',
+  components: {
+    Logo
+},
+data: () => ({
+  credentials: {
+    email: '',
+    password: '',
+    remember: false
+},
+        rules: {
+            email: [
+                v => !!v || 'E-mail obrigatório',
+                v => /.+@.+\..+/.test(v) || 'E-mail inválido',
+            ],
+            password: [
+                v => !!v || 'Senha obrigatória',
+                v => (v && v.length >= 6) || 'Senha deve ter pelo menos 6 caracteres',
+            ]
+        },
+        loading: false,
+        valid: false,
+    }),
+    computed: {
+        authStore() {
+            return useAuthStore()
+        },
+        theme() {
+            return useTheme()
         }
     },
     methods: {
         async handleLogin() {
             if (this.valid) {
                 this.loading = true
-                this.clear()
                 await this.authStore.handleLogin(this.credentials)
                 this.loading = false
+
             }
         },
         toggleTheme() {
             this.theme.global.name = this.theme.global.current.dark ? 'light' : 'dark'
         },
-        clear() {
-            this.authStore.error = null
-            this.credentials.email = ''
-            this.credentials.password = ''
-            this.valid = false
+        clearForm() {
+
         }
     }
 }

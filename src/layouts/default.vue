@@ -1,24 +1,33 @@
 <template>
-  <v-app>
-    <v-main>
-      <div class="d-flex justify-space-around">
-        <RouterLink to="/" >Principal</RouterLink>
-        <RouterLink to="/about" >About</RouterLink>
-        <button @click="authStore.handleLogout">Logout</button>
+    <v-layout>
 
-        <p>{{ authStore.isAuthenticated }}</p>
-        <p>{{ authStore.user.name}}</p>
+        <v-navigation-drawer>
 
-      </div>
+        </v-navigation-drawer>
+        <v-app-bar color="deep-purple-darken-4">
+          <v-container>
+            {{ authStore.user.name }}
+          </v-container>
 
-      <router-view />
-    </v-main>
-    <AppFooter />
-  </v-app>
+        </v-app-bar>
+        <v-main>
+            <router-view />
+        </v-main>
+    </v-layout>
 </template>
 
-<script setup>
+<script>
   import { useAuthStore } from '@/stores/auth';
 
-  const authStore = useAuthStore()
+  export default {
+    name: 'DefaultLayout',
+    data: () => ({
+
+    }),
+    computed: {
+      authStore() {
+        return useAuthStore()
+      }
+    }
+  }
 </script>

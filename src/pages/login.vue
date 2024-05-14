@@ -28,13 +28,13 @@
                     <v-row>
                         <v-col>
                             <v-text-field v-model="credentials.email" label="E-mail" type="email" :rules="rules.email"
-                                required clearable />
+                                required />
                         </v-col>
                     </v-row>
                     <v-row>
                         <v-col>
-                            <v-text-field v-model="credentials.password" label="Senha" type="password"
-                                :rules="rules.password" required clearable />
+                            <v-text-field v-model="credentials.password" label="Senha" :type="showPassword ? 'text' : 'password'  "
+                                :rules="rules.password" required  :append-inner-icon="showPassword ? 'mdi:mdi-eye' : 'mdi:mdi-eye-off'"  @click:append-inner="showPassword = !showPassword"></v-text-field>
                         </v-col>
                     </v-row>
                     <v-row class="ml-n5">
@@ -94,14 +94,13 @@ data: () => ({
         },
         loading: false,
         valid: false,
+        showPassword: false,
+        theme: useTheme()
     }),
     computed: {
         authStore() {
             return useAuthStore()
         },
-        theme() {
-            return useTheme()
-        }
     },
     methods: {
         async handleLogin() {

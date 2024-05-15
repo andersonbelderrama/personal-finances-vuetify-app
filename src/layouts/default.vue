@@ -53,8 +53,8 @@ export default {
             drawer: true,
             items: [
                   { title: 'Dashboard', icon: 'mdi:mdi-view-dashboard', to: '/' },
-                  { title: 'Contas', icon: 'mdi:mdi-account-box', to: '/about' },
-                  { title: 'Transações', icon: 'mdi:mdi-gavel', to: '/transactions' },
+                  { title: 'Contas', icon: 'mdi:mdi-bank', to: '/about' },
+                  { title: 'Transações', icon: 'mdi:mdi-cash-multiple', to: '/transactions' },
             ],
 
       }),

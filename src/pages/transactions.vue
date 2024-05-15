@@ -7,9 +7,15 @@
                         </v-card-title>
                   </v-card>
             </v-col>
-            <v-pagination v-model="pagination.current" :length="totalPages" @update:model-value="getTransactions()"
-                  rounded="circle"></v-pagination>
       </v-row>
+      <v-row class="d-flex justify-center">
+            <v-pagination v-if="totalPages > 1" v-model="pagination.current" :length="totalPages" total-visible="4" density="comfortable"
+                  @update:model-value="getTransactions()" rounded="circle"></v-pagination>
+      </v-row>
+
+      <v-overlay :model-value="loading" persistent opacity="0.22" scrim="black" class="align-center justify-center">
+            <v-progress-circular bg-color="transparent" color="deep-purple-darken-2" size="128" width="10" indeterminate></v-progress-circular>
+      </v-overlay>
 
 </template>
 
@@ -38,31 +44,28 @@ export default {
             },
       }),
       computed: {
-         totalPages() {
-               return this.pagination.total
-         }  
+            totalPages() {
+                  return this.pagination.total
+            }
       },
       methods: {
             async getTransactions() {
                   this.loading = true
 
-                  console.log(this.pagination.current)
-                  
-
                   const response = await axios.get('/api/transactions', {
                         params: {
                               page: this.pagination.current
                         }
-                  });
+                  })
 
                   this.transactions = response.data.data
                   this.pagination.total = response.data.meta.last_page
                   this.pagination.current = response.data.meta.current_page
 
+                  console.log(response.data)
+
                   this.loading = false
 
-                  console.log(response.data)
-                  console.log(this.pagination.total)
             },
       },
       mounted() {

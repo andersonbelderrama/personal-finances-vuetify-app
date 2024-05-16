@@ -30,11 +30,16 @@
             </v-navigation-drawer>
 
             <v-main>
-                  <v-container grid-list-xs>
-                        <h1>{{ $route.meta.title }}</h1>
+                  <v-container>
+                        <v-row>
+                              <v-col cols="12" class="d-flex align-center">
+                                    <h1>{{ $route.meta.title }}</h1>
+                              </v-col>
+                        </v-row>
                         <v-divider></v-divider>
                         <router-view />
                   </v-container>
+
 
             </v-main>
       </v-layout>
@@ -50,7 +55,7 @@ export default {
             Logo
       },
       data: () => ({
-            drawer: true,
+            drawer: false,
             items: [
                   { title: 'Dashboard', icon: 'mdi:mdi-view-dashboard', to: '/' },
                   { title: 'Contas', icon: 'mdi:mdi-bank', to: '/about' },
@@ -67,6 +72,9 @@ export default {
             toggleTheme() {
                   this.$vuetify.theme.global.name = this.$vuetify.theme.global.current.dark ? 'light' : 'dark'
             },
+      },
+      mounted() {
+            this.drawer = this.$vuetify.display.mdAndDown ? false : true;
       }
 }
 </script>

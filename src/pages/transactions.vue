@@ -25,7 +25,7 @@
 
                               <template v-slot:append>
                                     <v-row class="d-flex align-center ga-2 px-2">
-                                          <span class="font-weight-black text-h5">R$ {{ transaction.value.toString().replace('.', ',') }}</span>
+                                          <span class="font-weight-black text-h5">{{ formatValue(transaction.value) }}</span>
 
                                           <v-icon
                                                 :icon="transaction.type === 'Despesa' ? 'mdi:mdi-trending-down' : transaction.type === 'Receita' ? 'mdi:mdi-trending-up' : 'mdi:mdi-trending-neutral'"
@@ -39,11 +39,11 @@
                                           <v-col class="d-flex flex-column ga-2">
                                                 <v-list-item-subtitle>
                                                       <v-icon icon="mdi:mdi-calendar-check"></v-icon>
-                                                      {{ transaction.payment_date }}
+                                                      {{ formatDate(transaction.payment_date) }}
                                                 </v-list-item-subtitle>
                                                 <v-list-item-subtitle>
                                                       <v-icon icon="mdi:mdi-calendar-clock"></v-icon>
-                                                      {{ transaction.due_date }}
+                                                      {{ formatDate(transaction.due_date) }}
                                                 </v-list-item-subtitle>
                                           </v-col>
                                           <v-col class="d-flex justify-end align-center ga-2">
@@ -143,7 +143,22 @@ export default {
                   this.transactions.forEach(transaction => {
                         transaction.show = transaction.id === id ? !transaction.show : false;
                   });
+            },
+            formatDate(date) {
+                  if (!date) {
+                        return ''
+                  }
+
+                  return new Date(date).toLocaleDateString('pt-BR')
+            },
+            formatValue(value) {
+                  if (!value) {
+                        return ''
+                  }
+
+                  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)
             }
+
       },
       mounted() {
             this.getTransactions()

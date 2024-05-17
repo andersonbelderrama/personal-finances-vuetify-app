@@ -25,10 +25,12 @@
 
                               <template v-slot:append>
                                     <v-row class="d-flex align-center ga-2 px-2">
-                                          <span class="font-weight-black text-h5">{{ formatValue(transaction.value) }}</span>
+                                          <span class="font-weight-black text-h6 text-md-h5"
+                                                :class="transaction.type === 'Despesa' ? 'text-error' : transaction.type === 'Receita' ? 'text-success' : 'text-info'">{{
+                                                      formatValue(transaction.value) }}</span>
 
                                           <v-icon
-                                                :icon="transaction.type === 'Despesa' ? 'mdi:mdi-trending-down' : transaction.type === 'Receita' ? 'mdi:mdi-trending-up' : 'mdi:mdi-trending-neutral'"
+                                                :icon="transaction.type === 'Despesa' ? 'mdi:mdi-minus' : transaction.type === 'Receita' ? 'mdi:mdi-plus' : 'mdi:mdi-equal'"
                                                 :color="transaction.type === 'Despesa' ? 'error' : transaction.type === 'Receita' ? 'success' : 'info'">
                                           </v-icon>
                                     </v-row>
@@ -59,17 +61,14 @@
                               <v-card-actions class="d-flex justify-end align-center">
                                     <v-btn icon="mdi:mdi-dots-vertical"
                                           @click="expandTransaction(transaction.id)"></v-btn>
-                                    <v-btn icon="mdi:mdi-pencil" color="info"></v-btn>
-                                    <v-btn icon="mdi:mdi-delete" color="error"></v-btn>
+                                    <v-btn icon="mdi:mdi-pencil"></v-btn>
+                                    <v-btn icon="mdi:mdi-delete" 
+                                          @click="openDeleteDialog(transaction.id)"></v-btn>
                               </v-card-actions>
 
                               <v-expand-transition>
                                     <div v-show="transaction.show">
                                           <v-divider></v-divider>
-
-                                          <v-card-text>
-
-                                          </v-card-text>
                                     </div>
                               </v-expand-transition>
 
@@ -87,6 +86,30 @@
             <v-progress-circular bg-color="transparent" color="deep-purple-darken-2" size="128" width="10"
                   indeterminate></v-progress-circular>
       </v-overlay>
+
+      <v-dialog
+      v-model="dialog"
+      max-width="400"
+      persistent
+    >
+      <v-card
+        prepend-icon="mdi:mdi-delete-alert"
+        text="Deseja realmente deletar essa transação?"
+        title="Atenção!"
+      >
+        <template v-slot:actions>
+          <v-spacer></v-spacer>
+
+          <v-btn color="red" variant="flat" @click="deleteTransaction(this.id)">
+            Deletar
+          </v-btn>
+
+          <v-btn @click="dialog = false">
+            Cancelar
+          </v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
 
 </template>
 
@@ -108,6 +131,7 @@ export default {
       data: () => ({
             transactions: [],
             loading: false,
+            dialog: false,
             pagination: {
                   perPage: 10,
                   current: 1,
@@ -139,6 +163,15 @@ export default {
 
                   this.loading = false
             },
+            async deleteTransaction(id) {
+                  await axios.delete(`/api/transactions/${id}`)
+                  this.dialog = false
+                  this.getTransactions()
+            },
+            openDeleteDialog(id) {
+                  this.dialog = true
+                  this.id = id
+            },
             expandTransaction(id) {
                   this.transactions.forEach(transaction => {
                         transaction.show = transaction.id === id ? !transaction.show : false;
@@ -146,14 +179,14 @@ export default {
             },
             formatDate(date) {
                   if (!date) {
-                        return ''
+                        return 'Não informado'
                   }
 
                   return new Date(date).toLocaleDateString('pt-BR')
             },
             formatValue(value) {
                   if (!value) {
-                        return ''
+                        return 'Não informado'
                   }
 
                   return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value)

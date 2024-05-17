@@ -2,7 +2,8 @@
       <v-container>
             <v-row>
                   <v-col cols="12">
-                        <v-btn block variant="flat" rounded="xl" color="deep-purple" prepend-icon="mdi:mdi-plus">Novo
+                        <v-btn block variant="flat" rounded="xl" color="deep-purple" prepend-icon="mdi:mdi-plus"
+                              @click="modalTransaction" :loading="loading">Novo
                               Lançamento</v-btn>
                   </v-col>
             </v-row>
@@ -62,8 +63,7 @@
                                     <v-btn icon="mdi:mdi-dots-vertical"
                                           @click="expandTransaction(transaction.id)"></v-btn>
                                     <v-btn icon="mdi:mdi-pencil"></v-btn>
-                                    <v-btn icon="mdi:mdi-delete" 
-                                          @click="openDeleteDialog(transaction.id)"></v-btn>
+                                    <v-btn icon="mdi:mdi-delete" @click="openDeleteDialog(transaction.id)"></v-btn>
                               </v-card-actions>
 
                               <v-expand-transition>
@@ -87,29 +87,97 @@
                   indeterminate></v-progress-circular>
       </v-overlay>
 
-      <v-dialog
-      v-model="dialog"
-      max-width="400"
-      persistent
-    >
-      <v-card
-        prepend-icon="mdi:mdi-delete-alert"
-        text="Deseja realmente deletar essa transação?"
-        title="Atenção!"
-      >
-        <template v-slot:actions>
-          <v-spacer></v-spacer>
+      <v-dialog v-model="dialog" max-width="400" persistent>
+            <v-card prepend-icon="mdi:mdi-delete-alert" text="Deseja realmente deletar essa transação?"
+                  title="Atenção!" transition="dialog-bottom-transition">
 
-          <v-btn color="red" variant="flat" @click="deleteTransaction(this.id)">
-            Deletar
-          </v-btn>
+                  <template v-slot:actions>
+                        <v-spacer></v-spacer>
 
-          <v-btn @click="dialog = false">
-            Cancelar
-          </v-btn>
-        </template>
-      </v-card>
-    </v-dialog>
+                        <v-btn color="red" variant="flat" @click="deleteTransaction(this.id)">
+                              Deletar
+                        </v-btn>
+
+                        <v-btn @click="dialog = false">
+                              Cancelar
+                        </v-btn>
+                  </template>
+            </v-card>
+      </v-dialog>
+
+      <v-dialog v-model="modal.show" max-width="600">
+            <v-card prepend-icon="mdi:mdi-cash" :title="modal.edit ? 'Editar Transação' : 'Nova Transação'">
+                  <v-divider></v-divider>
+                  <v-card-text>
+                        <v-row dense>
+                              <v-col cols="12">
+                                    <v-text-field label="Nome" required></v-text-field>
+                              </v-col>
+
+                              <v-col cols="12">
+                                    <v-text-field label="Descrição"></v-text-field>
+                              </v-col>
+
+                              <v-col cols="12" sm="6">
+                                    <v-text-field label="Valor"></v-text-field>
+                              </v-col>
+
+                              <v-col cols="12" sm="6">
+                                    <v-autocomplete :items="types.map((type) => type.value)"
+                                          label="Tipo"></v-autocomplete>
+                              </v-col>
+
+                              <v-col cols="12" sm="6">
+                                    <v-autocomplete :items="categories.map((category) => category.name)"
+                                          label="Categoria"></v-autocomplete>
+                              </v-col>
+
+                              <v-col cols="12" sm="6">
+                                    <v-autocomplete :items="accounts.map((accounts) => accounts.name)"
+                                          label="Conta"></v-autocomplete>
+                              </v-col>
+
+                              <v-col cols="12" sm="6">
+                                    <v-date-input label="Pagamento"></v-date-input>
+                              </v-col>
+
+                              <v-col cols="12" sm="6">
+                                    <v-date-input label="Vencimento"></v-date-input>
+                              </v-col>
+
+                              <v-col cols="12" sm="6">
+                                    <v-switch :model-value="true" color="deep-purple-darken-2" label="Pago"></v-switch>
+                              </v-col>
+
+
+
+
+                              <v-col cols="12" sm="6">
+                                    <v-select :items="['0-17', '18-29', '30-54', '54+']" label="Age*"
+                                          required></v-select>
+                              </v-col>
+
+                              <v-col cols="12" sm="6">
+                                    <v-autocomplete
+                                          :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
+                                          label="Interests" auto-select-first multiple></v-autocomplete>
+                              </v-col>
+                        </v-row>
+
+                  </v-card-text>
+
+                  <v-divider></v-divider>
+
+                  <v-card-actions>
+                        <v-spacer></v-spacer>
+
+                        <v-btn text="Fechar" variant="plain" @click="modal.show = false"></v-btn>
+
+                        <v-btn prepend-icon="mdi:mdi-content-save" color="deep-purple-darken-2" text="Salvar"
+                              variant="flat" @click="modal.show = false"></v-btn>
+                  </v-card-actions>
+            </v-card>
+      </v-dialog>
 
 </template>
 
@@ -130,8 +198,20 @@ export default {
       },
       data: () => ({
             transactions: [],
+            types: [
+                  { id: 1, value: 'Receita' },
+                  { id: 2, value: 'Despesa' },
+                  { id: 3, value: 'Transferência' }
+            ],
+            categories: [],
+            accounts: [],
+
             loading: false,
             dialog: false,
+            modal: {
+                  show: false,
+                  edit: false
+            },
             pagination: {
                   perPage: 10,
                   current: 1,
@@ -151,7 +231,7 @@ export default {
                         params: {
                               page: this.pagination.current,
                               per_page: this.pagination.perPage,
-                              include: 'category'
+                              include: 'category,account'
                         }
                   })
 
@@ -168,9 +248,29 @@ export default {
                   this.dialog = false
                   this.getTransactions()
             },
+            async getCategories() {
+                  const response = await axios.get('/api/categories')
+
+                  this.categories = response.data.data
+
+                  console.log(response.data)
+            },
+            async getAccounts() {
+                  const response = await axios.get('/api/accounts')
+
+                  this.accounts = response.data.data
+
+                  console.log(response.data)
+            },
             openDeleteDialog(id) {
                   this.dialog = true
                   this.id = id
+            },
+            modalTransaction() {
+                  this.loading = true
+                  this.modal.show = true
+                  this.loading = false
+
             },
             expandTransaction(id) {
                   this.transactions.forEach(transaction => {
@@ -195,6 +295,8 @@ export default {
       },
       mounted() {
             this.getTransactions()
+            this.getCategories()
+            this.getAccounts()
       },
 }
 

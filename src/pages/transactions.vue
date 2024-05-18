@@ -138,29 +138,17 @@
                               </v-col>
 
                               <v-col cols="12" sm="6">
-                                    <v-date-input label="Pagamento"></v-date-input>
+                                    <v-date-input v-model="model" label="Pagamento"
+                                          prepend-inner-icon="mdi:mdi-calendar-check"></v-date-input>
                               </v-col>
 
                               <v-col cols="12" sm="6">
-                                    <v-date-input label="Vencimento"></v-date-input>
+                                    <v-date-input v-model="model" label="Vencimento"
+                                          prepend-inner-icon="mdi:mdi-calendar-clock"></v-date-input>
                               </v-col>
 
                               <v-col cols="12" sm="6">
                                     <v-switch :model-value="true" color="deep-purple-darken-2" label="Pago"></v-switch>
-                              </v-col>
-
-
-
-
-                              <v-col cols="12" sm="6">
-                                    <v-select :items="['0-17', '18-29', '30-54', '54+']" label="Age*"
-                                          required></v-select>
-                              </v-col>
-
-                              <v-col cols="12" sm="6">
-                                    <v-autocomplete
-                                          :items="['Skiing', 'Ice hockey', 'Soccer', 'Basketball', 'Hockey', 'Reading', 'Writing', 'Coding', 'Basejump']"
-                                          label="Interests" auto-select-first multiple></v-autocomplete>
                               </v-col>
                         </v-row>
 
@@ -217,6 +205,7 @@ export default {
                   current: 1,
                   total: 0
             },
+            model: null,
       }),
       computed: {
             totalPages() {
